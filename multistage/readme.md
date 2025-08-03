@@ -1,12 +1,6 @@
 Docker Multi-Stage Build Demonstration
+
 This repository contains example Dockerfiles to demonstrate the benefits of multi-stage builds in creating smaller, more efficient Docker images. We will compare a standard build process with a multi-stage approach, focusing on the final image size.
-
-
-Project Structure
-.
-├── Dockerfile
-├── Dockerfile-withstaging
-└── README.md
 
 docker build -t test-no-stage-alpine .
 
