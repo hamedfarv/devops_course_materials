@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: myconfigmap
+data:
+  app_url: http://devops.com
+  access_level: "1"
+  teacher: "hamed farvardin"
+  timeout: '10'
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: my-pod
+spec:
+  restartPolicy: Never
+  containers:
+  - name: ubuntu
+    image: ubuntu
+    envFrom:
+    - configMapRef:
+        name: myconfigmap
+    args:
+    - env  
