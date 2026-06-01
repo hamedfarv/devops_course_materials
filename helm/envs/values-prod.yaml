@@ -1,0 +1,74 @@
+# values-prod.yaml — Production environment overrides
+# Deploy: helm upgrade --install myapp-prod ./test-helm-template -f helm/envs/values-prod.yaml -n prod --create-namespace
+# Pre-req: kubectl label node my-cluster-worker env=prod
+#          nginx ingress controller installed
+# Access:  curl -H "Host: myapp-prod.local" http://localhost
+#          or add "127.0.0.1 myapp-prod.local" to /etc/hosts → open http://myapp-prod.local
+
+replicaCount: 3
+
+image:
+  repository: nginx
+  tag: "1.25.3"          # exact pinned tag — never use 'latest' in prod
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+  hosts:
+    - host: myapp-prod.local
+      paths:
+        - path: /
+          pathType: Prefix
+  # TLS disabled for kind demo — in real prod use cert-manager:
+  # tls:
+  #   - secretName: myapp-tls
+  #     hosts:
+  #       - myapp-prod.local
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 250m
+    memory: 256Mi
+
+autoscaling:
+  enabled: true
+  minReplicas: 3
+  maxReplicas: 6
+  targetCPUUtilizationPercentage: 70
+
+# Pin pods to the node labeled env=prod
+# Run: kubectl label node my-cluster-worker env=prod
+nodeSelector:
+  env: prod
+
+tolerations:
+  - key: "dedicated"
+    operator: "Equal"
+    value: "prod"
+    effect: "NoSchedule"
+
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: test-helm-template
+          topologyKey: kubernetes.io/hostname
+
+podLabels:
+  environment: prod
+
+podAnnotations:
+  note: "production — handle with care"

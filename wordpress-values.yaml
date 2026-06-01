@@ -1,0 +1,40 @@
+# wordpress-values.yaml
+
+## WordPress Configuration
+wordpressUsername: admin
+wordpressPassword: admin123
+wordpressEmail: admin@example.com
+wordpressFirstName: Admin
+wordpressLastName: User
+wordpressBlogName: Hamed Farvardin blog - Helm demo
+
+## Service Configuration - Use NodePort for Kind
+service:
+  type: NodePort
+  nodePorts:
+    http: 30080
+    https: 30443
+
+## MariaDB Configuration
+mariadb:
+  auth:
+    rootPassword: rootpassword123
+    database: wordpress
+    username: wordpress
+    password: wordpress123
+  primary:
+    persistence:
+      enabled: false  # Disable for demo (faster)
+
+## WordPress Persistence
+persistence:
+  enabled: false  # Disable for demo (faster)
+
+## Resource limits (smaller for local demo)
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 250m
+    memory: 256Mi

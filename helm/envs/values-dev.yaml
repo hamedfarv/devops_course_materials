@@ -1,0 +1,34 @@
+# values-dev.yaml — Development environment overrides
+# Deploy: helm upgrade --install myapp-dev ./test-helm-template -f helm/envs/values-dev.yaml -n dev --create-namespace
+
+replicaCount: 1
+
+image:
+  repository: nginx
+  tag: "1.25-alpine"
+  pullPolicy: IfNotPresent
+
+service:
+  type: NodePort
+  port: 80
+  nodePort: 30081        # pre-mapped in kind-cluster.yaml → localhost:30081
+
+ingress:
+  enabled: false
+
+resources:
+  limits:
+    cpu: 200m
+    memory: 256Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+autoscaling:
+  enabled: false
+
+podLabels:
+  environment: dev
+
+podAnnotations:
+  note: "dev environment — not stable"

@@ -1,0 +1,35 @@
+# values-staging.yaml — Staging environment overrides
+# Deploy: helm upgrade --install myapp-staging ./test-helm-template -f helm/envs/values-staging.yaml -n staging --create-namespace
+# Access:  kubectl port-forward svc/myapp-staging-test-helm-template 8082:80 -n staging
+#          then open http://localhost:8082
+
+replicaCount: 2
+
+image:
+  repository: nginx
+  tag: "1.25-alpine"
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: false         # no ingress controller in kind — use port-forward
+
+resources:
+  limits:
+    cpu: 300m
+    memory: 384Mi
+  requests:
+    cpu: 150m
+    memory: 192Mi
+
+autoscaling:
+  enabled: false
+
+podLabels:
+  environment: staging
+
+podAnnotations:
+  note: "staging environment — mirrors prod config"
